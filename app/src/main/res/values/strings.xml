@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">TheAlpsHotel_umali</string>
+    <string name="title_activity_account_page">AccountPage</string>
+    <string name="title_activity_booking_confirm">BookingConfirmActivity</string>
+    <string name="title_activity_booking_manager">BookingManager</string>
+    <string name="title_activity_hotel_ratings">HotelRatings</string>
+    <string name="title_activity_my_bookings">MyBookingsActivity</string>
 </resources>

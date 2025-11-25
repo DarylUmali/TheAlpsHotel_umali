@@ -1,10 +1,12 @@
 package ph.edu.comteq.thealpshotel_umali
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,8 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -46,6 +49,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.gson.Gson
 import ph.edu.comteq.thealpshotel_umali.ui.theme.TheAlpsHotel_umaliTheme
+import kotlin.jvm.java
+import kotlin.math.floor
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,18 +67,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun Greeting(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var hotels by remember { mutableStateOf(emptyList<Hotel>()) }
     var searchQuery by remember { mutableStateOf("") }
 
-    val filteredHotels = hotels.filter {
-        it.hotel_name.contains(searchQuery, ignoreCase = true)
+    val filteredHotels = hotels.filter { it.hotel_name.contains(searchQuery, ignoreCase = true)
     }
-
-    // Load json data
+    //load json data
     LaunchedEffect(Unit) {
         val json = context.assets.open("hotels.json")
             .bufferedReader()
@@ -83,65 +85,106 @@ fun Greeting(modifier: Modifier = Modifier) {
             Array<Hotel>::class.java)
         hotels = hotelArray.toList()
     }
-
-    //Container
-    Column(
-        modifier = Modifier
+    //Main Container
+    Column (
+        modifier = modifier
     ){
-        //Header
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
+            //Left Side
             Text(
-                text = "The Alp's Hotels",
+                text = "Alps Hotel",
+                modifier = Modifier.padding(start = 16.dp)
             )
-            // Left side: title Logo
             Image(
                 painter = painterResource(id = R.drawable.france_national_flag),
                 contentDescription = "Logo",
-                modifier = Modifier.width(30.dp)
-
+                modifier = androidx.compose.ui.Modifier.size(width = 40.dp, height = 24.dp)
             )
-            // Right side: user icon
-            Icon(
-                imageVector = Icons.Outlined.Person,
-                contentDescription = "User Icon",
-                modifier = Modifier.width(40.dp)
-            )
+            //Right Side Icons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "My Bookings",
+                    modifier = Modifier
+                        .width(40.dp)
+                        .clickable {
+                            val intent = Intent(context, MyBookingsActivity::class.java)
+                            context.startActivity(intent)
+                        }
+                )
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .width(40.dp)
+                        .clickable {
+                            val intent = Intent(context, AccountPage::class.java)
+                            context.startActivity(intent)
+                        }
+                )
+            }
         }
-        // Search Box
+        //Search bar
         OutlinedTextField(
             value = searchQuery,
-            onValueChange = { searchQuery = it },
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = {newValue -> searchQuery = newValue},
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            placeholder = {Text("Search.....")},
+            placeholder = {Text("Search...")},
             singleLine = true,
         )
-        // Hotel List
+        //Hotel List
         LazyColumn (
             modifier = Modifier.fillMaxSize()
-        ) {
-            items(filteredHotels){ hotel ->
+        ){
+            items(filteredHotels) {hotel ->
                 HotelCard(hotel)
+
+//                Text(
+//                    text = hotel.hotel_name,
+//                    fontSize = 18.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    modifier = Modifier.padding(16.dp)
+//                )
             }
         }
     }
 }
 @Composable
 fun HotelCard(hotel: Hotel) {
+    val context = LocalContext.current
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clickable {
+                val intent = Intent(context, HotelRatings::class.java).apply {
+                    // Pass data from the 'hotel' object
+                    putExtra("HOTEL_ID", hotel.hotel_id)
+                    putExtra("HOTEL_NAME", hotel.hotel_name)
+
+                    // FIX: Use the 'hotel' object to get the image path.
+                    putExtra("HOTEL_IMAGE_PATH", hotel.hotel_cover_image)
+                }
+                context.startActivity(intent)
+            },
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Hotel Image
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("file:///android_asset/${hotel.hotel_cover_image}")
@@ -149,16 +192,19 @@ fun HotelCard(hotel: Hotel) {
                     .build(),
                 contentDescription = hotel.hotel_name,
                 placeholder = painterResource(R.drawable.ic_launcher_background),
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier
+                    .size(120.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
-            // Hotel Info
             Column(
-                modifier = Modifier.weight(1f).padding(horizontal = 14.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp)
             ) {
                 Text(
                     text = hotel.hotel_name,
+                    // A smaller font size might fit better here
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
@@ -168,18 +214,18 @@ fun HotelCard(hotel: Hotel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = hotel.hotel_rating.toString(),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
+                        hotel.hotel_rating.toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
                     )
-                    //Star
-                    // TODO: Replace with real star rating
-                    repeat(hotel.hotel_rating.toInt()) {
+                    val starCount = floor(hotel.hotel_rating).toInt()
+                    //star
+                    repeat(starCount) {
                         Icon(
                             imageVector = Icons.Filled.Star,
-                            contentDescription = "Star Icon",
-                            modifier = Modifier.size(16.dp),
-                            tint = Color(0xFFFFD600)
+                            contentDescription = "Star",
+                            tint = Color.Yellow,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 }
@@ -192,6 +238,7 @@ fun HotelCard(hotel: Hotel) {
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {

@@ -12,6 +12,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TheAlpsHotel_umali">
         <activity
+            android:name=".MyBookingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_my_bookings"
+            android:theme="@style/Theme.TheAlpsHotel_umali" />
+        <activity
+            android:name=".HotelRatings"
+            android:exported="false"
+            android:label="@string/title_activity_hotel_ratings"
+            android:theme="@style/Theme.TheAlpsHotel_umali" />
+        <activity
+            android:name=".BookingManager"
+            android:exported="false"
+            android:label="@string/title_activity_booking_manager"
+            android:theme="@style/Theme.TheAlpsHotel_umali" />
+        <activity
+            android:name=".BookingConfirmActivity"
+            android:exported="false"
+            android:label="@string/title_activity_booking_confirm"
+            android:theme="@style/Theme.TheAlpsHotel_umali" />
+        <activity
+            android:name=".AccountPage"
+            android:exported="false"
+            android:label="@string/title_activity_account_page"
+            android:theme="@style/Theme.TheAlpsHotel_umali" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"

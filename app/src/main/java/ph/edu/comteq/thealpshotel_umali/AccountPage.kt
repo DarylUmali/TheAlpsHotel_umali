@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,10 +88,10 @@ class AccountPage : ComponentActivity() {
 fun AccountScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxSize() // Ensures the Column takes up all available space
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally, // Center content horizontally
+        verticalArrangement = Arrangement.Center // Center content vertically
     ) {
         // Profile Image
         Image(
@@ -102,7 +103,7 @@ fun AccountScreen(modifier: Modifier = Modifier) {
                 .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp)) // Adds space between elements
 
         // Profile Name
         Text(
@@ -111,21 +112,23 @@ fun AccountScreen(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp)) // Space between name and description
 
-        // Description
+        // Profile Description (Ensure it is centered)
         Text(
             text = "An IT Student of Comteq Computer College, To be is to Dream",
             fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center // Centers the text itself
         )
     }
 }
 
 
+
 @Preview(showBackground = true)
 @Composable
-fun AccountScreenPreview() {
+fun AccountPagePreview() {
     TheAlpsHotel_umaliTheme {
         AccountScreen()
     }
